@@ -33,4 +33,4 @@ Route::get('/fnatic', [MencobaController::class, 'fnaticesport']);
 
 Route::get('/fpx', [MencobaController::class, 'fpxesport']);
 
-Route::get('/', [MencobaController::class, 'beranda']);
+// Route::get('/', [MencobaController::class, 'beranda']);
