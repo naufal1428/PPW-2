@@ -1,25 +1,46 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Buku</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-</head>
-<body>
+@extends('layout.master')
+
+@section('content')
     
     <div class="container">
-        <h4>Edit Buku</h4>
+
+        <h4 align="center">Edit Buku</h4>
+
+        @if (count($errors) > 0)
+            <ul class="alert alert-danger">
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        @endif
+
         <form method="post" action="{{ route('buku.update', $buku->id) }}">
             @csrf
-            <div>Judul <input type="text" name="judul" value="{{$buku->judul}}"></div>
-            <div>Penulis <input type="text" name="penulis" value="{{$buku->penulis}}"></div>
-            <div>Harga <input type="text" name="harga" value="{{ $buku->harga}}"></div>
-            <div>Tgl. Terbit <input type="text" name="tgl_terbit" value="{{ \Carbon\Carbon::parse($buku->tgl_terbit)->format('Y-m-d')}}"></div>
-            <div><button type="submit">Update</button>
+            
+            <div class="mb-3">
+                <label class="form-label">Judul</label>
+                <input type="text" class="form-control" name="judul" value="{{$buku->judul}}">
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Penulis</label>
+                <input type="text" class="form-control" name="penulis" value="{{$buku->penulis}}">
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Harga</label>
+                <input type="text" class="form-control" name="harga" value="{{ $buku->harga}}">
+            </div>
+            
+            <div class="mb-3">
+                <label class="form-label">Tgl. Terbit</label>
+                <input type="text" id="tgl_terbit" name="tgl_terbit" class="date form-control" value="{{ \Carbon\Carbon::parse($buku->tgl_terbit)->format('Y/m/d')}}">
+            </div>
+
+            <div><button type="submit" class="btn btn-success">Update</button>
             <a href="/buku">Batal</a></div>
         </form>
     </div>
+
+@endsection
     
-</body>
-</html>
