@@ -68,162 +68,72 @@
         </h2>
     </x-slot>
 
-    <div class="container">
+    <div class="container mt-5">
         @if (session('pesan'))
             <div class="alert alert-success">{{ session('pesan') }}</div>
         @endif
     
-        <form action="{{ route('buku.search') }}" method="GET" class="search-form">
+        <form action="{{ route('buku.search') }}" method="GET" class="form-inline my-2">
             @csrf
-            <input type="text" name="kata" class="form-control" placeholder="Cari...">
-            <button type="submit" class="btn btn-primary">Cari</button>
+            <div class="input-group">
+                <input type="text" name="kata" class="form-control" placeholder="Cari..."
+                    style="width: 70%;">
+                <div class="input-group-append">
+                    <button class="btn btn-warning mx-3" type="submit">Cari</button>
+                </div>
+            </div>
         </form>
     
-        <p><a href="{{ route('buku.create') }}" class="btn btn-success">Tambah Buku</a></p>
-    
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>No</th>
-                    <th>Judul Buku</th>
-                    <th>Penulis</th>
-                    <th>Harga</th>
-                    <th>Tgl. Terbit</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                @forelse($data_buku as $buku)
-                <tr>
-                    <td>{{ $loop->iteration }}</td>
-                    <td>{{ $buku->judul }}</td>
-                    <td>{{ $buku->penulis }}</td>
-                    <td>{{ "Rp " . number_format($buku->harga, 2, ',', '.') }}</td>
-                    <td>{{ $buku->tgl_terbit->format('d/m/Y') }}</td>
-                    <td>
-                        <div class="action-buttons">
-                            <form action="{{ route('buku.destroy', $buku->id) }}" method="post"
-                                onsubmit="return confirm('Yakin mau dihapus?')">
-                                @csrf
-                                
-                                <button type="submit" class="btn-delete">Hapus</button>
-                            </form>
-                            <a href="{{ route('buku.edit', $buku->id) }}" class="btn-edit">Edit</a>
-                        </div>
-                    </td>
-                </tr>                
-                @empty
+        @if(Auth::user()->level=='admin')
+            <p><a href="{{ route('buku.create') }}" class="btn btn-success my-3">Tambah Buku</a></p>
+        @endif
+
+        <div class="container">
+            <table class="table">
+                <thead>
                     <tr>
-                        <td colspan="6" class="text-center">Tidak ada data buku</td>
+                        <th>No</th>
+                        <th>Judul Buku</th>
+                        <th>Penulis</th>
+                        <th>Harga</th>
+                        <th>Tgl. Terbit</th>
+                        <th>Aksi</th>
                     </tr>
-                @endforelse
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @forelse($data_buku as $buku)
+                        <tr class="table-secondary">
+                            <td>{{ $loop->iteration }}</td>
+                            <td>{{ $buku->judul }}</td>
+                            <td>{{ $buku->penulis }}</td>
+                            <td>{{ "Rp " . number_format($buku->harga, 2, ',', '.') }}</td>
+                            <td>{{ $buku->tgl_terbit->format('d/m/Y') }}</td>
+                            <td class="d-flex">
+                                @if(Auth::user()->level=='admin')
+                                <form action="{{ route('buku.destroy', $buku->id) }}" method="post"
+                                    onsubmit="return confirm('Yakin mau dihapus?')">
+                                    @csrf
+                                    
+                                    <button type="submit" class="btn btn-danger mr-3">Hapus</button>
+                                </form>
+                                <a href="{{ route('buku.edit', $buku->id) }}" class="btn btn-primary">Edit</a>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="text-center">Tidak ada data buku</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     
-        <div class="pagination">
+        <div class="row justify-content-center">
             {{ $data_buku->links() }}
         </div>
         <div class="mt-3"><strong>Jumlah Buku: {{ $jumlah_buku }}</strong></div>
     </div>
-    
-    <style>
-        .container {
-            max-width: 960px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-    
-        .search-form {
-            margin-bottom: 20px;
-        }
-    
-        .table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-    
-        .table th, .table td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
-    
-        .btn {
-            padding: 8px 16px;
-            margin-right: 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-    
-        .btn-primary {
-            background-color: #007bff;
-            color: #fff;
-        }
-    
-        .btn-danger {
-            background-color: #dc3545;
-            color: #fff;
-        }
-    
-        .btn-success {
-            background-color: #28a745;
-            color: #fff;
-        }
-    
-        .pagination {
-            text-align: center;
-        }
-    
-        .pagination ul {
-            display: inline-block;
-            padding: 0;
-            margin: 0;
-        }
-    
-        .pagination li {
-            display: inline;
-            margin-right: 10px;
-        }
-    
-        .pagination li:last-child {
-            margin-right: 0;
-        }
-    
-        .pagination a {
-            text-decoration: none;
-            color: #007bff;
-        }
-    
-        .pagination .active a {
-            font-weight: bold;
-        }
-
-        .action-buttons {
-            display: flex;
-        }
-
-        .btn-delete, .btn-edit {
-            padding: 8px 16px;
-            margin-right: 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-            color: #fff;
-            font-weight: bold;
-        }
-
-        .btn-delete {
-            background-color: #dc3545;
-        }
-
-        .btn-edit {
-            background-color: #007bff;
-        }
-
-    </style>
     
 
 </x-app-layout>
