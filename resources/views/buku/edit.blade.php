@@ -212,21 +212,6 @@
                 </script>
             </div>
 
-            {{-- gallery --}}
-            
-                <div class="gallery_items mt-6 space-x-4 flex flex-wrap">
-                    @foreach($buku->galleries()->get() as $gallery)
-                        <div class="gallery_item mb-4">
-                            <img class="object-cover object-center" src="{{ asset($gallery->path) }}" alt="" width="400">
-                            <form action="{{ route('buku.deleteImage', [$buku->id, $gallery->id]) }}" method="POST">
-                                @csrf
-                                <button class="btn btn-danger mt-1 mb-1" onClick="return confirm('Yakin mau dihapus?')">Hapus</button>
-                            </form>
-                        </div>
-                    @endforeach
-                </div>
-           
-    
             <div class="mt-6 flex items-center justify-end space-x-6">
                 <a href="/buku" class="text-sm font-semibold text-red-500 hover:underline">Cancel</a>
                 <button type="submit" class="px-3 py-3 text-sm text-blue-700 font-semibold hover:underline">Save</button>
@@ -234,6 +219,18 @@
     
         </form>
     
+        {{-- gallery --}}
+        <div class="gallery_items mt-6 space-x-4 flex flex-wrap">
+            @foreach($buku->galleries()->get() as $gallery)
+                <div class="gallery_item mb-4">
+                    <img class="object-cover object-center" src="{{ asset($gallery->path) }}" alt="" width="400">
+                    <form action="{{ route('buku.deleteImage', [$buku->id, $gallery->id]) }}" method="POST">
+                        @csrf
+                        <button class="btn btn-danger mt-1 mb-1" onClick="return confirm('Yakin mau dihapus?')">Hapus</button>
+                    </form>
+                </div>
+            @endforeach
+        </div>
     </div>
     
 

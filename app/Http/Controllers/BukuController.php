@@ -197,9 +197,8 @@ class BukuController extends Controller
         }
         
         return redirect('/buku')->with('pesan','Perubahan Data Buku Berhasil di Simpan');
-
-        
     }
+
 
     /**
      * Remove the specified resource from storage.
