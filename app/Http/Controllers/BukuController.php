@@ -225,4 +225,30 @@ class BukuController extends Controller
             return back()->with('error', 'Gambar Tidak Ditemukan');
         }
     }
+
+    public function galBuku($title){
+        $bukus = Buku::where('buku_seo', $title)->first();
+        $galeris = $bukus->photos()->orderBy('id','desc')->paginate(6);
+        return view('galeri-buku', compact('$bukus','galeris'));
+    }
+
+    public function showGallery($id)
+    {
+        $buku = Buku::findOrFail($id);
+        $galleries = $buku->galleries;
+
+        return view('buku.show_gallery', compact('buku', 'galleries'));
+    }
+
+    public function userIndex()
+    {
+        // $data_buku = Buku::paginate(5); // Sesuaikan dengan cara Anda mendapatkan data buku
+        // $jumlah_buku = Buku::count(); // Sesuaikan dengan cara Anda mendapatkan jumlah buku
+
+        $batas = 5;
+        $jumlah_buku = Buku::count();
+        $data_buku = Buku::orderBy('id', 'desc')->paginate($batas);
+        $no = $batas * ($data_buku->currentPage() - 1);
+        return view('buku.index_user', compact('data_buku', 'jumlah_buku'));
+    }
 }

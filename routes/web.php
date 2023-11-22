@@ -64,9 +64,13 @@ Route::middleware('auth')->group(function () {
 
     Route::post('/buku/edit/{id}/delete-image/{image_id}', [BukuController::class, 'deleteImage'])->name('buku.deleteImage');
 
-    // Route::post('/buku/edit/{id}/delete-image/{image_id}', [BukuController::class, 'deleteGallery'])->name('buku.gallery.delete');
-
     });
 });
+
+Route::get('/detail-buku/{title}',[BukuController::class, 'galbuku'])->name('galeri.buku');
+
+Route::get('/buku/show-gallery/{id}', [BukuController::class, 'showGallery'])->name('user.showGallery');
+
+Route::get('/buku/user-index', [BukuController::class, 'userIndex'])->name('user.index');
 
 require __DIR__.'/auth.php';
