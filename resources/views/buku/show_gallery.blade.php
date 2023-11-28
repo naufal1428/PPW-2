@@ -13,7 +13,6 @@
             @foreach($galleries as $gallery)
                 <div class="gallery_item mb-4">
                     <a href="{{ asset($gallery->path) }}" data-lightbox="roadtrip"><img class="object-cover object-center" src="{{ asset($gallery->path) }}" alt="" width="400"></a>
-                    {{-- <img class="object-cover object-center" src="{{ asset($gallery->path) }}" alt="" width="400"> --}}
                 </div>
             @endforeach
         </div>

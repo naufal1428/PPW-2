@@ -242,13 +242,48 @@ class BukuController extends Controller
 
     public function userIndex()
     {
-        // $data_buku = Buku::paginate(5); // Sesuaikan dengan cara Anda mendapatkan data buku
-        // $jumlah_buku = Buku::count(); // Sesuaikan dengan cara Anda mendapatkan jumlah buku
-
         $batas = 5;
         $jumlah_buku = Buku::count();
         $data_buku = Buku::orderBy('id', 'desc')->paginate($batas);
         $no = $batas * ($data_buku->currentPage() - 1);
         return view('buku.index_user', compact('data_buku', 'jumlah_buku'));
+    }
+
+    public function rateBook(Request $request, $id)
+    {
+        $buku = Buku::findOrFail($id);
+
+        $request->validate([
+            'rating' => 'required|in:1,2,3,4,5',
+        ]);
+
+        $rating = $request->input('rating');
+
+        // Perbarui nilai rating_1, rating_2, dll.
+        $buku->update([
+            "rating_$rating" => $buku->{"rating_$rating"} + 1,
+            'total_ratings' => $buku->total_ratings + 1,
+        ]);
+
+        // Hitung rating yang baru dan simpan ke dalam model
+        $buku->calculateRating();
+
+        return redirect()->route('user.index')->with('pesan', 'Rating berhasil ditambahkan.');
+    }
+
+    public function addToFavorites(Request $request, $id)
+    {
+        $buku = Buku::findOrFail($id);
+
+        $buku->update(['favorite' => true]);
+
+        return redirect()->route('user.index')->with('pesan', 'Buku berhasil ditambahkan ke favorit.');
+    }
+
+    public function myFavorites()
+    {
+        $favorites = Buku::where('favorite', true)->get(['judul', 'penulis']);
+
+        return view('buku.myfavorites', compact('favorites'));
     }
 }

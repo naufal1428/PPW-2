@@ -21,6 +21,8 @@
                     <th>Harga</th>
                     <th>Tgl. Terbit</th>
                     <th>Galeri</th>
+                    <th>Rating</th>
+                    <th>Favorite</th>
                 </tr>
             </thead>
             <tbody>
@@ -47,6 +49,34 @@
                                 <a href="{{ route('user.showGallery', $buku->id) }}" class="underline text-blue-600">Lihat Galeri</a>
                             @else
                                 Tidak ada gambar
+                            @endif
+                        </td>
+                        <td>
+                            @if ($buku->rating)
+                                {{ $buku->rating }}
+                            @else
+                                Rating is not available
+                                <form action="{{ route('user.rateBook', $buku->id) }}" method="post">
+                                    @csrf
+                                    <select name="rating" id="rating" class="form-select">
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                    </select>
+                                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-semibold hover:text-white py-2 px-4 mr-3 hover:border-transparent rounded">Rate</button>
+                                </form>
+                            @endif
+                        </td>
+                        <td>
+                            @if ($buku->favorite)
+                                Favorit
+                            @else
+                                <form action="{{ route('user.addToFavorites', $buku->id) }}" method="post">
+                                    @csrf
+                                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-semibold hover:text-white py-2 px-2 hover:border-transparent rounded">Simpan ke favorit</button>
+                                </form>
                             @endif
                         </td>
                     </tr>

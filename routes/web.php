@@ -73,4 +73,11 @@ Route::get('/buku/show-gallery/{id}', [BukuController::class, 'showGallery'])->n
 
 Route::get('/buku/user-index', [BukuController::class, 'userIndex'])->name('user.index');
 
+Route::post('/buku/rate/{id}', [BukuController::class, 'rateBook'])->name('user.rateBook');
+
+Route::post('/buku/add-to-favorites/{id}', [BukuController::class, 'addToFavorites'])->name('user.addToFavorites');
+
+Route::get('/buku/myfavourite', [BukuController::class, 'myFavorites'])->name('user.myFavorites');
+
+
 require __DIR__.'/auth.php';
