@@ -40,7 +40,16 @@
                                 </div>
                             @endif
                         </td>
-                        <td>{{ $buku->judul }}</td>
+                        <td>
+                            {{ $buku->judul }}
+                            <div>
+                                @if ($buku->ratings->isEmpty())
+                                   <p class="text-red-600"> Rating is not available </p>
+                                @else
+                                   <p class="text-green-600"> Rating: {{ number_format($buku->ratings->avg('rating'), 2) }} </p>
+                                @endif
+                            </div>
+                        </td>
                         <td>{{ $buku->penulis }}</td>
                         <td>{{ "Rp " . number_format($buku->harga, 2, ',', '.') }}</td>
                         <td>{{ $buku->tgl_terbit->format('d/m/Y') }}</td>
@@ -52,30 +61,31 @@
                             @endif
                         </td>
                         <td>
-                            @if ($buku->rating)
-                                {{ $buku->rating }}
-                            @else
-                                Rating is not available
+                            @if(Auth::check())
                                 <form action="{{ route('user.rateBook', $buku->id) }}" method="post">
                                     @csrf
-                                    <select name="rating" id="rating" class="form-select">
+                                    <select name="rating" id="rating" class="border rounded w-full py-2 px-3">
                                         <option value="1">1</option>
                                         <option value="2">2</option>
                                         <option value="3">3</option>
                                         <option value="4">4</option>
                                         <option value="5">5</option>
                                     </select>
-                                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-semibold hover:text-white py-2 px-4 mr-3 hover:border-transparent rounded">Rate</button>
+                                    <button type="submit" class="text-blue-600">Submit Rating</button>
                                 </form>
                             @endif
                         </td>
                         <td>
-                            @if ($buku->favorite)
-                                Favorit
-                            @else
-                                <form action="{{ route('user.addToFavorites', $buku->id) }}" method="post">
+                            @if (auth()->user()->favorites->contains('buku_id', $buku->id))
+                                <form action="{{ route('buku.removeFromFavorites', $buku->id) }}" method="post"
+                                    onsubmit="return confirm('Yakin mau dihapus?')">
                                     @csrf
-                                    <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-semibold hover:text-white py-2 px-2 hover:border-transparent rounded">Simpan ke favorit</button>
+                                    <button type="submit" class=" text-red-500 font-semibold hover:text-red-700 py-2 px-2 ">Hapus</button>
+                                </form>
+                            @else
+                                <form action="{{ route('buku.addToFavorites', $buku->id) }}" method="post">
+                                    @csrf
+                                    <button type="submit" class=" text-blue-500 font-semibold hover:text-blue-700 py-2 px-2 ">Simpan</button>
                                 </form>
                             @endif
                         </td>

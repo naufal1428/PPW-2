@@ -13,8 +13,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::table('buku', function (Blueprint $table) {
-            $table->boolean('favorite')->default(false);
+        Schema::create('favorite', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('buku_id')->constrained('buku')->onDelete('cascade');
+            $table->timestamps();
         });
     }
 
@@ -25,8 +28,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::table('buku', function (Blueprint $table) {
-            $table->dropColumn('favorite');
-        });
+        Schema::dropIfExists('favorite');
     }
 };

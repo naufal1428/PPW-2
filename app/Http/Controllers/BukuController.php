@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Gallery;
+use App\Models\Rating;
 use Illuminate\Http\Request;
 use \App\Models\Buku;
 
+use Illuminate\Support\Facades\Auth;
 use Intervention\Image\Facades\Image;
 
 class BukuController extends Controller
@@ -54,21 +56,6 @@ class BukuController extends Controller
      */
     public function store(Request $request)
     {
-        // $this->validate($request, [
-        //     'judul' => 'required|string',
-        //     'penulis' => 'required|string|max:30',
-        //     'harga' => 'required|numeric',
-        //     'tgl_terbit' => 'required|date'
-        // ]);
-
-        // $buku = new Buku;
-        // $buku->judul = $request->judul;
-        // $buku->penulis = $request->penulis;
-        // $buku->harga = $request->harga;
-        // $buku->tgl_terbit = $request->tgl_terbit;
-        // $buku->save();
-        // return redirect('/buku')->with('pesan','Data Buku Berhasil Disimpan');
-
         // Validasi input
         $request->validate([
             'judul' => 'required|string',
@@ -251,38 +238,71 @@ class BukuController extends Controller
 
     public function rateBook(Request $request, $id)
     {
+        // Temukan buku berdasarkan ID
         $buku = Buku::findOrFail($id);
 
+        // Validasi input rating
         $request->validate([
-            'rating' => 'required|in:1,2,3,4,5',
+            'rating' => 'required|integer|between:1,5',
         ]);
 
-        $rating = $request->input('rating');
+        $user = auth()->user();
 
-        // Perbarui nilai rating_1, rating_2, dll.
-        $buku->update([
-            "rating_$rating" => $buku->{"rating_$rating"} + 1,
-            'total_ratings' => $buku->total_ratings + 1,
-        ]);
+        // Cek apakah user sudah memberikan rating untuk buku ini
+        $existingRating = Rating::where('user_id', $user->id)
+            ->where('buku_id', $buku->id)
+            ->first();
 
-        // Hitung rating yang baru dan simpan ke dalam model
-        $buku->calculateRating();
+        // Jika user sudah memberikan rating, update rating; jika belum, buat rating baru
+        if ($existingRating) {
+            $existingRating->update(['rating' => $request->input('rating')]);
+        } else {
+            // Menambahkan 'user_id' pada data yang akan di-create
+            Rating::create([
+                'user_id' => $user->id,
+                'buku_id' => $buku->id,
+                'rating' => $request->input('rating'),
+            ]);
+        }
 
         return redirect()->route('user.index')->with('pesan', 'Rating berhasil ditambahkan.');
     }
 
-    public function addToFavorites(Request $request, $id)
+    public function addToFavorites($id)
     {
+        
+        $user = auth()->user();
         $buku = Buku::findOrFail($id);
 
-        $buku->update(['favorite' => true]);
+        // Pastikan buku belum ada dalam daftar favorit pengguna
+        if (!$user->favorites()->where('buku_id', $buku->id)->exists()) {
+            // Tambahkan buku ke daftar favorit pengguna
+            $user->favorites()->create(['buku_id' => $buku->id]);
 
-        return redirect()->route('user.index')->with('pesan', 'Buku berhasil ditambahkan ke favorit.');
+            return redirect()->back()->with('pesan', 'Buku berhasil disimpan ke daftar favorit.');
+        }
+
+        return redirect()->back()->with('pesan', 'Buku sudah ada dalam daftar favorit.');
+        
+    }
+
+    public function removeFromFavorites($id)
+    {
+
+        $user = auth()->user();
+        $buku = Buku::findOrFail($id);
+
+        // Hapus buku dari daftar favorit pengguna
+        $user->favorites()->where('buku_id', $buku->id)->delete();
+
+        return redirect()->back()->with('pesan', 'Buku berhasil dihapus dari daftar favorit.');
+        
     }
 
     public function myFavorites()
     {
-        $favorites = Buku::where('favorite', true)->get(['judul', 'penulis']);
+        // Ambil daftar buku favorit untuk pengguna saat ini
+        $favorites = auth()->user()->favorites()->with('buku')->get();
 
         return view('buku.myfavorites', compact('favorites'));
     }
