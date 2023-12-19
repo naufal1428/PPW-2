@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\MencobaController;
 use App\Http\Controllers\BukuController;
+use App\Http\Controllers\KategoriController;
 
 /*
 |--------------------------------------------------------------------------
@@ -56,6 +57,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/buku/myfavorites', [BukuController::class, 'myFavorites'])->name('buku.myFavorites');
 
+    Route::get('/buku-populer', [BukuController::class, 'bukuPopuler'])->name('buku.populer');
+
+    Route::resource('kategori', KategoriController::class);
+
     Route::middleware('admin')->group(function () {
 
         Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -77,6 +82,9 @@ Route::middleware('auth')->group(function () {
         Route::get('/buku/search', [BukuController::class, 'search'])->name('buku.search');
 
         Route::post('/buku/edit/{id}/delete-image/{image_id}', [BukuController::class, 'deleteImage'])->name('buku.deleteImage');
+
+
+        Route::resource('kategori', KategoriController::class);
 
     });
 });
